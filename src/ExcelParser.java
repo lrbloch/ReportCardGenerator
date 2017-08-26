@@ -3,9 +3,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
-
-// TO DO: put in a lookup table for letter grade to GPA
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
