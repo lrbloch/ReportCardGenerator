@@ -1,19 +1,16 @@
-import java.util.HashMap;
-
-/**
- * 
- */
+import java.util.ArrayList;
 
 /**
  * @author Laura
  *
  */
+
+
 public class Student {
 	private int id;
 	private String name;
 	private Double gpa;
-	private HashMap<String, String> courseGrades;
-	
+	private ArrayList<CourseGrade> courseGrades;
 	
 	/**
 	 * @param args
@@ -70,24 +67,18 @@ public class Student {
 		gpa = curGpa;
 	}
 
-
-	/**
-	 * @return the classes
-	 */
-	public HashMap<String, String> getCourses() {
+	public ArrayList<CourseGrade> getCourseGrades() {
 		return courseGrades;
 	}
 
 
-	/**
-	 * @param newCourse new course to add to list
-	 */
-	public void addCourse(String newCourse, String grade) {
+	public void addStudentCourse(String courseName, String coursePercentage, String courseLetterGrade) {
+		CourseGrade course = new CourseGrade(courseName, coursePercentage, courseLetterGrade);
 		if(this.courseGrades == null)
 		{
-			this.courseGrades = new HashMap<String, String>();
+			this.courseGrades = new ArrayList<CourseGrade>();
 		}
-		this.courseGrades.put(newCourse, grade);
+		this.courseGrades.add(course);
 	}
 
 }

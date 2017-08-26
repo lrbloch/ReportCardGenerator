@@ -13,10 +13,12 @@ public class Course {
 	 */
 	private int hours;
 	private String courseName;
+	private String instructorName;
+	private boolean isTypeA;
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	public Course()
+	{
+		this.isTypeA = false;
 	}
 
 	/**
@@ -31,6 +33,30 @@ public class Course {
 	 */
 	public void setCourseName(String courseName) {
 		this.courseName = courseName;
+	}
+
+	public String getInstructorName() {
+		return instructorName;
+	}
+
+	public void setInstructorName(String instructorName) {
+		this.instructorName = instructorName;
+	}
+
+	public boolean isTypeA() {
+		return isTypeA;
+	}
+
+	public void setTypeA(boolean isTypeA) {
+		this.isTypeA = isTypeA;
+	}
+
+	public int getHours() {
+		return hours;
+	}
+
+	public void setHours(int hours) {
+		this.hours = hours;
 	}
 
 }
