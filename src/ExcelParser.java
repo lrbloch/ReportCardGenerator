@@ -3,12 +3,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Date;
-
-import javax.print.attribute.standard.DateTimeAtCreation;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -22,16 +19,17 @@ public class ExcelParser {
 	static HashMap<String, Course> genericCourses = new HashMap<String, Course>();
 
 	public static void main(String[] args) throws FileNotFoundException {
-		courseHours = parseStringToInt("/Users/Laura/Downloads/CourseHours.csv");
-		gradeGPAs = parseStringToDouble("/Users/Laura/Downloads/gradeGPAs.csv");
-		typeAGradeGPAs = parseStringToDouble("/Users/Laura/Downloads/gradeGPAs.csv");
+
+		courseHours = parseStringToInt("Resources/CourseHours.csv");
+		gradeGPAs = parseStringToDouble("Resources/gradeGPAs.csv");
+		typeAGradeGPAs = parseStringToDouble("Resources/TypeAgradeGPAs.csv");
 
 		BufferedReader br = null;
 		String curLine = "";
 		try {
 			int curId = 0;
 			Student curStudent = new Student();
-			br = new BufferedReader(new FileReader("/Users/Laura/Downloads/Grades.csv"));
+			br = new BufferedReader(new FileReader("Resources/Grades.csv"));
 			int count = 0;
 
 			// skip first row (titles)
@@ -56,7 +54,7 @@ public class ExcelParser {
 				while (columnIndex < row.length && row != null) {
 					String curCell = row[columnIndex];
 
-					//System.out.printf("columnIndex: %d, Cell: %s\n", columnIndex, curCell);
+					// System.out.printf("columnIndex: %d, Cell: %s\n", columnIndex, curCell);
 					switch (columnIndex) {
 					case 8:
 						curId = Integer.parseInt(curCell);
@@ -88,18 +86,18 @@ public class ExcelParser {
 					}
 					columnIndex++;
 				}
-				
-				if(!genericCourses.containsKey(courseName))
-				{
+
+				if (!genericCourses.containsKey(courseName)) {
 					Course newCourse = new Course();
 					newCourse.setCourseName(courseName);
 					newCourse.setHours(0);
 					System.out.println(courseHours.get(courseName));
 					newCourse.setHours(courseHours.get(courseName));
-					
-					//todo: use regular expressions 
-					if(courseName.contains("7A ") || courseName.contains("8A ") || courseName.contains("9A ") || courseName.contains("10A ") || courseName.contains("11A ") || courseName.contains("12A "))
-					{
+
+					// todo: use regular expressions
+					if (courseName.contains("7A ") || courseName.contains("8A ") || courseName.contains("9A ")
+							|| courseName.contains("10A ") || courseName.contains("11A ")
+							|| courseName.contains("12A ")) {
 						System.out.println("Type A Course Name: " + courseName);
 						newCourse.setTypeA(true);
 					}
@@ -118,16 +116,13 @@ public class ExcelParser {
 				students.put(curId, curStudent);
 			}
 
-			/*for(Course c : courses.values())
-			{
-				System.out.println(c.getCourseName());
-				System.out.println(c.getHours());
-				System.out.println(c.getInstructorName());
-				System.out.println("Type A?: " + c.isTypeA());
-			} */
-			
+			/*
+			 * for(Course c : courses.values()) { System.out.println(c.getCourseName());
+			 * System.out.println(c.getHours()); System.out.println(c.getInstructorName());
+			 * System.out.println("Type A?: " + c.isTypeA()); }
+			 */
+
 			calculateGpas();
-			
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -163,17 +158,16 @@ public class ExcelParser {
 			for (CourseGrade courseGrade : courseGrades) {
 				double gpa = 0;
 				Course genericCourse = genericCourses.get(courseGrade.getCourseName());
-				
+
 				System.out.println("Course name: " + courseGrade.getCourseName());
 
 				int curHours = courseHours.get(courseGrade.getCourseName());
 				System.out.println("Course hours: " + curHours);
 				String letterGrade = courseGrade.getLetterGrade();
 				System.out.println("Letter grade: " + letterGrade);
-				if(genericCourse.isTypeA())
-				{
+				if (genericCourse.isTypeA()) {
 					gpa = typeAGradeGPAs.get(letterGrade);
-				}else {
+				} else {
 					gpa = gradeGPAs.get(letterGrade);
 				}
 				System.out.println("Course gpa: " + gpa);
@@ -198,14 +192,14 @@ public class ExcelParser {
 
 			System.out.println("Overall GPA: " + s.getgpa());
 			writer.write("2017-2018 Term 1 Midterm Grade Report\n");
-			
+
 			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 			Date date = new Date();
-			writer.write("(Updated " + df.format(date) + ")\n"); //(Updated September 7, 2016)
-			
+			writer.write("(Updated " + df.format(date) + ")\n"); // (Updated September 7, 2016)
+
 			writer.write(s.getName() + ',');
 			writer.write("ID,");
-			writer.write(Integer.toString(s.getId()) + ',');
+			writer.write(Integer.toString(s.getId()) + ", ,");
 			writer.write("GPA,");
 			writer.write(Double.toString(s.getgpa()) + '\n');
 			writer.write("Class, Instructor, Grade, Percentage, Hours, GPA\n");
@@ -219,27 +213,20 @@ public class ExcelParser {
 
 	private static HashMap<String, Double> parseStringToDouble(String fileName) {
 		// TODO Auto-generated method stub
-		BufferedReader br = null;
 		String curLine = "";
 		HashMap<String, Double> mapping = new HashMap<String, Double>();
 		try {
-			br = new BufferedReader(new FileReader(fileName));
+			BufferedReader br = new BufferedReader(new FileReader(fileName));
 			// skip first row (titles)
 			br.readLine();
 
 			while ((curLine = br.readLine()) != null) // && count < 6)
 			{
-				if (!curLine.contains(",")) {
-					break;
+				if (curLine.contains(",")) {
+					String[] row = curLine.split(",");
+					mapping.put(row[0], Double.parseDouble(row[1]));
 				}
-				String[] row = curLine.split(",");
-				mapping.put(row[0], Double.parseDouble(row[1]));
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
 			if (br != null) {
 				try {
 					br.close();
@@ -247,6 +234,10 @@ public class ExcelParser {
 					e.printStackTrace();
 				}
 			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return mapping;
 	}
