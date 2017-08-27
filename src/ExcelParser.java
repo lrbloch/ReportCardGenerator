@@ -1,36 +1,45 @@
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Date;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 
 public class ExcelParser {
-	
+
 	static HashMap<String, Integer> courseHours = new HashMap<String, Integer>();
 	static HashMap<String, Double> gradeGPAs = new HashMap<String, Double>();
 	static HashMap<String, Double> typeAGradeGPAs = new HashMap<String, Double>();
 	static HashMap<Integer, Student> students = new HashMap<Integer, Student>();
 	static HashMap<String, Course> genericCourses = new HashMap<String, Course>();
-	
+
 	private static String GradeSpreadsheetPath = "Resources/Grades.csv";
-	private static String ReportCardPath = "ReportCard.csv";
+	private static String ReportCardPath = System.getProperty("user.dir") + "ReportCard.csv";
 	private static String ReportCardHeader = "2017-2018 Term 1 Midterm Grade Report\n";
-	private static String CourseHourPath = "Resources/CourseHours.csv";
-	private static String GradeGPAPath = "Resources/gradeGPAs.csv";
-	private static String TypeAGradeGPAPath = "Resources/TypeAgradeGPAs.csv";
-	
+
+	@SuppressWarnings("unchecked")
 	public static void parse() throws FileNotFoundException {
 
-		courseHours = parseStringToInt(CourseHourPath);
-		gradeGPAs = parseStringToDouble(GradeGPAPath);
-		typeAGradeGPAs = parseStringToDouble(TypeAGradeGPAPath);
+		try {
+			courseHours = (HashMap<String, Integer>) readHashMap("Resources/courseHoursMap.txt");
+			gradeGPAs = (HashMap<String, Double>) readHashMap("Resources/non-A-gradeGPAs.txt");
+			typeAGradeGPAs = (HashMap<String, Double>) readHashMap("Resources/typeAgradeGPAs.txt");
+		} catch (ClassNotFoundException | IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.err.println(e1.getMessage());
+		}
+		// courseHours = parseStringToInt(CourseHourPath);
+		// gradeGPAs = parseStringToDouble(GradeGPAPath);
+		// typeAGradeGPAs = parseStringToDouble(TypeAGradeGPAPath);
 
 		BufferedReader br = null;
 		String curLine = "";
@@ -98,8 +107,13 @@ public class ExcelParser {
 					Course newCourse = new Course();
 					newCourse.setCourseName(courseName);
 					newCourse.setHours(0);
-					System.out.println(courseHours.get(courseName));
-					newCourse.setHours(courseHours.get(courseName));
+					if (courseHours.get(courseName) == null) {
+						GeneratorGui.showError("Couldn't find hours for course: " + courseName);
+						System.err.println("Couldn't find hours for course: " + courseName);
+					} else {
+						System.out.println(courseHours.get(courseName));
+						newCourse.setHours(courseHours.get(courseName));
+					}
 
 					// todo: use regular expressions
 					if (courseName.contains("7A ") || courseName.contains("8A ") || courseName.contains("9A ")
@@ -116,8 +130,10 @@ public class ExcelParser {
 				if (curStudent.getName() == null) {
 					curStudent.setName(curName.toString());
 				} else if (!curStudent.getName().equals(curName.toString())) {
-					System.err.printf("Error - you have two students ('%s' and '%s') with the same ID (%d)!",
+					String errorMessage = String.format(
+							"Error - you have two students ('%s' and '%s') with the same ID (%d)!",
 							curStudent.getName(), curName.toString(), curId);
+					GeneratorGui.showError(errorMessage);
 					return;
 				}
 				students.put(curId, curStudent);
@@ -132,14 +148,17 @@ public class ExcelParser {
 			calculateGpas();
 
 		} catch (FileNotFoundException e) {
+			System.err.printf(e.toString());
 			e.printStackTrace();
 		} catch (IOException e) {
+			System.err.printf(e.toString());
 			e.printStackTrace();
 		} finally {
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
+					System.err.printf(e.toString());
 					e.printStackTrace();
 				}
 			}
@@ -151,6 +170,9 @@ public class ExcelParser {
 		FileWriter writer = new FileWriter(ReportCardPath);
 
 		for (int studentId : students.keySet()) {
+			if (students.get(studentId) == null) {
+				System.err.println("Couldn't find student ID" + studentId);
+			}
 			Student s = students.get(studentId);
 			System.out.println("----------------");
 			System.out.printf("StudentId: %d \t Student Name: %s\n", s.getId(), s.getName());
@@ -187,7 +209,7 @@ public class ExcelParser {
 				buff.append("," + letterGrade);
 				buff.append("," + courseGrade.getPercentage());
 				buff.append("," + curHours);
-				buff.append("," + String.format("%.2f",gpa));//Double.toString(gpa));
+				buff.append("," + String.format("%.2f", gpa));// Double.toString(gpa));
 				buff.append("\n");
 
 			}
@@ -196,8 +218,7 @@ public class ExcelParser {
 			// round to two decimal places
 			// curGpa = round(curGpa, 2);
 			s.setgpa(curGpa);
-			
-			
+
 			System.out.println("Overall GPA: " + String.format("%.2f", s.getgpa()));
 			writer.write(ReportCardHeader);
 
@@ -217,71 +238,16 @@ public class ExcelParser {
 
 		writer.flush();
 		writer.close();
+		GeneratorGui.showComplete("Created File " + ReportCardPath +"!");
 	}
 
-	private static HashMap<String, Double> parseStringToDouble(String fileName) {
-		// TODO Auto-generated method stub
-		String curLine = "";
-		HashMap<String, Double> mapping = new HashMap<String, Double>();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(fileName));
-			// skip first row (titles)
-			br.readLine();
+	private static Object readHashMap(String fileName) throws IOException, ClassNotFoundException {
+		FileInputStream fileInputStream = new FileInputStream(fileName);
+		ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
-			while ((curLine = br.readLine()) != null) // && count < 6)
-			{
-				if (curLine.contains(",")) {
-					String[] row = curLine.split(",");
-					mapping.put(row[0], Double.parseDouble(row[1]));
-				}
-			}
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return mapping;
-	}
-
-	private static HashMap<String, Integer> parseStringToInt(String fileName) {
-		// TODO Auto-generated method stub
-		BufferedReader br = null;
-		String curLine = "";
-		HashMap<String, Integer> courseHours = new HashMap<String, Integer>();
-		try {
-			br = new BufferedReader(new FileReader(fileName));
-			// skip first row (titles)
-			br.readLine();
-
-			while ((curLine = br.readLine()) != null) // && count < 6)
-			{
-				if (!curLine.contains(",")) {
-					break;
-				}
-				String[] row = curLine.split(",");
-				courseHours.put(row[0], Integer.parseInt(row[1]));
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return courseHours;
+		Map<?, ?> map = (HashMap<?, ?>) objectInputStream.readObject();
+		objectInputStream.close();
+		return map;
 	}
 
 	public static double round(double value, int places) {
@@ -300,6 +266,10 @@ public class ExcelParser {
 	public static void setOutputDir(String absolutePath) {
 		ReportCardPath = absolutePath + "//ReportCard.csv";
 	}
+	
+	public static String getOutputDir() {
+		return  ReportCardPath;
+	}
 
 	public static String getReportCardHeader() {
 		return ReportCardHeader;
@@ -309,27 +279,42 @@ public class ExcelParser {
 		ReportCardHeader = reportCardHeader;
 	}
 
-	public static String getCourseHoursPath() {
-		return CourseHourPath;
-	}
-
-	public static void setCourseHourPath(String courseHourPath) {
-		CourseHourPath = courseHourPath;
-	}
-
-	public static void setGradeGPAPath(String gradeGPAPath) {
-		GradeGPAPath = gradeGPAPath;
-	}
-
-	public static void setTypeAGradeGPAPath(String typeAGradeGPAPath) {
-		TypeAGradeGPAPath = typeAGradeGPAPath;
-	}
-	
-	public static String getGradeGPAPath() {
-		return GradeGPAPath;
-	}
-	
-	public static String getTypeAGradeGPAPath() {
-		return TypeAGradeGPAPath;
-	}
+	/*
+	 * private static void storeHashMap(Object mapName, String fileName) throws
+	 * IOException { // TODO Auto-generated method stub FileOutputStream
+	 * fileOutputStream = new FileOutputStream(fileName); ObjectOutputStream
+	 * objectOutputStream= new ObjectOutputStream(fileOutputStream);
+	 * objectOutputStream.writeObject(mapName); objectOutputStream.close(); }
+	 */
+	/*
+	 * private static HashMap<String, Double> parseStringToDouble(String fileName) {
+	 * // TODO Auto-generated method stub String curLine = ""; HashMap<String,
+	 * Double> mapping = new HashMap<String, Double>(); try { BufferedReader br =
+	 * new BufferedReader(new FileReader(fileName)); // skip first row (titles)
+	 * br.readLine();
+	 * 
+	 * while ((curLine = br.readLine()) != null) // && count < 6) { if
+	 * (curLine.contains(",")) { String[] row = curLine.split(",");
+	 * mapping.put(row[0], Double.parseDouble(row[1])); } } if (br != null) { try {
+	 * br.close(); } catch (IOException e) { System.err.printf(e.toString());
+	 * e.printStackTrace(); } } } catch (FileNotFoundException e) {
+	 * System.err.printf(e.toString()); e.printStackTrace(); } catch (IOException e)
+	 * { e.printStackTrace(); System.err.printf(e.toString()); } return mapping; }
+	 * 
+	 * private static HashMap<String, Integer> parseStringToInt(String fileName) {
+	 * // TODO Auto-generated method stub BufferedReader br = null; String curLine =
+	 * ""; HashMap<String, Integer> courseHours = new HashMap<String, Integer>();
+	 * try { br = new BufferedReader(new FileReader(fileName)); // skip first row
+	 * (titles) br.readLine();
+	 * 
+	 * while ((curLine = br.readLine()) != null) // && count < 6) { if
+	 * (!curLine.contains(",")) { break; } String[] row = curLine.split(",");
+	 * courseHours.put(row[0], Integer.parseInt(row[1])); } } catch
+	 * (FileNotFoundException e) { System.err.printf(e.toString());
+	 * e.printStackTrace(); } catch (IOException e) {
+	 * System.err.printf(e.toString()); e.printStackTrace(); } finally { if (br !=
+	 * null) { try { br.close(); } catch (IOException e) {
+	 * System.err.printf(e.toString()); e.printStackTrace(); } } } return
+	 * courseHours; }
+	 */
 }

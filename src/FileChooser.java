@@ -43,7 +43,11 @@ import javax.swing.filechooser.*;
  */
 public class FileChooser extends JPanel
                              implements ActionListener {
-    static private final String newline = "\n";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 593053209284796047L;
+	static private final String newline = "\n";
     JButton openButton, saveButton;
     JTextArea log;
     JFileChooser fc;
