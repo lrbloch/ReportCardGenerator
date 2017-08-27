@@ -12,24 +12,32 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 public class ExcelParser {
+	
 	static HashMap<String, Integer> courseHours = new HashMap<String, Integer>();
 	static HashMap<String, Double> gradeGPAs = new HashMap<String, Double>();
 	static HashMap<String, Double> typeAGradeGPAs = new HashMap<String, Double>();
 	static HashMap<Integer, Student> students = new HashMap<Integer, Student>();
 	static HashMap<String, Course> genericCourses = new HashMap<String, Course>();
+	
+	private static String GradeSpreadsheetPath = "Resources/Grades.csv";
+	private static String ReportCardPath = "ReportCard.csv";
+	private static String ReportCardHeader = "2017-2018 Term 1 Midterm Grade Report\n";
+	private static String CourseHourPath = "Resources/CourseHours.csv";
+	private static String GradeGPAPath = "Resources/gradeGPAs.csv";
+	private static String TypeAGradeGPAPath = "Resources/TypeAgradeGPAs.csv";
+	
+	public static void parse() throws FileNotFoundException {
 
-	public static void main(String[] args) throws FileNotFoundException {
-
-		courseHours = parseStringToInt("Resources/CourseHours.csv");
-		gradeGPAs = parseStringToDouble("Resources/gradeGPAs.csv");
-		typeAGradeGPAs = parseStringToDouble("Resources/TypeAgradeGPAs.csv");
+		courseHours = parseStringToInt(CourseHourPath);
+		gradeGPAs = parseStringToDouble(GradeGPAPath);
+		typeAGradeGPAs = parseStringToDouble(TypeAGradeGPAPath);
 
 		BufferedReader br = null;
 		String curLine = "";
 		try {
 			int curId = 0;
 			Student curStudent = new Student();
-			br = new BufferedReader(new FileReader("Resources/Grades.csv"));
+			br = new BufferedReader(new FileReader(GradeSpreadsheetPath));
 			int count = 0;
 
 			// skip first row (titles)
@@ -141,7 +149,7 @@ public class ExcelParser {
 	}
 
 	private static void calculateGpas() throws IOException {
-		FileWriter writer = new FileWriter("ReportCard.csv");
+		FileWriter writer = new FileWriter(ReportCardPath);
 
 		for (int studentId : students.keySet()) {
 			Student s = students.get(studentId);
@@ -191,7 +199,7 @@ public class ExcelParser {
 			s.setgpa(curGpa);
 
 			System.out.println("Overall GPA: " + s.getgpa());
-			writer.write("2017-2018 Term 1 Midterm Grade Report\n");
+			writer.write(ReportCardHeader);
 
 			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 			Date date = new Date();
@@ -283,5 +291,45 @@ public class ExcelParser {
 		BigDecimal bd = new BigDecimal(value);
 		bd = bd.setScale(places, RoundingMode.HALF_UP);
 		return bd.doubleValue();
+	}
+
+	public static void setGradeSpreadsheetPath(String name) {
+		GradeSpreadsheetPath = name;
+	}
+
+	public static void setOutputDir(String absolutePath) {
+		ReportCardPath = absolutePath + "//ReportCard.csv";
+	}
+
+	public static String getReportCardHeader() {
+		return ReportCardHeader;
+	}
+
+	public static void setReportCardHeader(String reportCardHeader) {
+		ReportCardHeader = reportCardHeader;
+	}
+
+	public static String getCourseHoursPath() {
+		return CourseHourPath;
+	}
+
+	public static void setCourseHourPath(String courseHourPath) {
+		CourseHourPath = courseHourPath;
+	}
+
+	public static void setGradeGPAPath(String gradeGPAPath) {
+		GradeGPAPath = gradeGPAPath;
+	}
+
+	public static void setTypeAGradeGPAPath(String typeAGradeGPAPath) {
+		TypeAGradeGPAPath = typeAGradeGPAPath;
+	}
+	
+	public static String getGradeGPAPath() {
+		return GradeGPAPath;
+	}
+	
+	public static String getTypeAGradeGPAPath() {
+		return TypeAGradeGPAPath;
 	}
 }
