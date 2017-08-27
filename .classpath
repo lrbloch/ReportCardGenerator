@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="Resources"/>
 	<classpathentry kind="lib" path="miglayout15-swing.jar" sourcepath="miglayout-src.zip"/>
+	<classpathentry kind="lib" path="/excelClassExceptionDebug/jxl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

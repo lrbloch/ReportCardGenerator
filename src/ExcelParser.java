@@ -38,7 +38,6 @@ public class ExcelParser {
 			int curId = 0;
 			Student curStudent = new Student();
 			br = new BufferedReader(new FileReader(GradeSpreadsheetPath));
-			int count = 0;
 
 			// skip first row (titles)
 			br.readLine();
@@ -188,17 +187,18 @@ public class ExcelParser {
 				buff.append("," + letterGrade);
 				buff.append("," + courseGrade.getPercentage());
 				buff.append("," + curHours);
-				buff.append("," + Double.toString(gpa));
+				buff.append("," + String.format("%.2f",gpa));//Double.toString(gpa));
 				buff.append("\n");
 
 			}
 			// calculate overall GPA
 			curGpa = (curGpa / totalHours);
 			// round to two decimal places
-			curGpa = round(curGpa, 2);
+			// curGpa = round(curGpa, 2);
 			s.setgpa(curGpa);
-
-			System.out.println("Overall GPA: " + s.getgpa());
+			
+			
+			System.out.println("Overall GPA: " + String.format("%.2f", s.getgpa()));
 			writer.write(ReportCardHeader);
 
 			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
@@ -209,7 +209,7 @@ public class ExcelParser {
 			writer.write("ID,");
 			writer.write(Integer.toString(s.getId()) + ", ,");
 			writer.write("GPA,");
-			writer.write(Double.toString(s.getgpa()) + '\n');
+			writer.write(String.format("%.2f", s.getgpa()) + '\n');
 			writer.write("Class, Instructor, Grade, Percentage, Hours, GPA\n");
 			writer.write(buff.toString());
 			writer.write("\n\n");
