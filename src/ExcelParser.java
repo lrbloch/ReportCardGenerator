@@ -2,40 +2,145 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Date;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 
 public class ExcelParser {
 
-	static HashMap<String, Integer> courseHours = new HashMap<String, Integer>();
-	static HashMap<String, Double> gradeGPAs = new HashMap<String, Double>();
-	static HashMap<String, Double> typeAGradeGPAs = new HashMap<String, Double>();
+	static HashMap<String, Integer> courseHours;
+	static HashMap<String, Double> gradeGPAs;
+	static HashMap<String, Double> typeAGradeGPAs;
 	static HashMap<Integer, Student> students = new HashMap<Integer, Student>();
 	static HashMap<String, Course> genericCourses = new HashMap<String, Course>();
 
 	private static String GradeSpreadsheetPath = "Resources/Grades.csv";
-	private static String ReportCardPath = System.getProperty("user.dir") + "ReportCard.csv";
+	private static String ReportCardPath = System.getProperty("user.dir") + "/ReportCard.csv";
 	private static String ReportCardHeader = "2017-2018 Term 1 Midterm Grade Report\n";
 
 	@SuppressWarnings("unchecked")
 	public static void parse() throws FileNotFoundException {
 
 		try {
-			courseHours = (HashMap<String, Integer>) readHashMap("Resources/courseHoursMap.txt");
-			gradeGPAs = (HashMap<String, Double>) readHashMap("Resources/non-A-gradeGPAs.txt");
-			typeAGradeGPAs = (HashMap<String, Double>) readHashMap("Resources/typeAgradeGPAs.txt");
+			FileInputStream fileInputStream = new FileInputStream("Resources/courseHoursMap.txt");
+			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
+			courseHours = new HashMap<String, Integer>();
+			courseHours = (HashMap<String, Integer>) objectInputStream.readObject();
+			objectInputStream.close();
+
+			// courseHours = (HashMap<String, Integer>)
+			// readStringIntHashMap("Resources/courseHoursMap.txt");
+			// gradeGPAs = (HashMap<String, Double>)
+			// readStringDoubleHashMap("Resources/non-A-gradeGPAs.txt");
+			// typeAGradeGPAs = (HashMap<String, Double>)
+			// readStringDoubleHashMap("Resources/typeAgradeGPAs.txt");
 		} catch (ClassNotFoundException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			System.err.println(e1.getMessage());
+			GeneratorGui.showError(e1.getMessage());
+		}
+
+		gradeGPAs = new HashMap<String, Double>();
+		gradeGPAs.put("A+", 4.33);
+		gradeGPAs.put("A", 4.00);
+		gradeGPAs.put("A-", 3.667);
+		gradeGPAs.put("B+", 3.333);
+		gradeGPAs.put("B", 3.00);
+		gradeGPAs.put("B-", 2.667);
+		gradeGPAs.put("C+", 2.333);
+		gradeGPAs.put("C", 2.00);
+		gradeGPAs.put("C-", 1.667);
+		gradeGPAs.put("D+", 1.333);
+		gradeGPAs.put("D", 1.00);
+		gradeGPAs.put("D-", 0.667);
+		gradeGPAs.put("F", 0.00);
+
+		typeAGradeGPAs = new HashMap<String, Double>();
+		typeAGradeGPAs.put("A+", 5.00);
+		typeAGradeGPAs.put("A", 4.667);
+		typeAGradeGPAs.put("A-", 4.333);
+		typeAGradeGPAs.put("B+", 4.00);
+		typeAGradeGPAs.put("B", 3.667);
+		typeAGradeGPAs.put("B-", 3.333);
+		typeAGradeGPAs.put("C+", 3.00);
+		typeAGradeGPAs.put("C", 2.667);
+		typeAGradeGPAs.put("C-", 2.333);
+		typeAGradeGPAs.put("D+", 2.00);
+		typeAGradeGPAs.put("D", 1.667);
+		typeAGradeGPAs.put("D-", 1.333);
+		typeAGradeGPAs.put("F", 0.00);
+
+		// Properties properties = new Properties();
+		// properties.putAll(typeAGradeGPAs);
+		// try (OutputStream output = new
+		// FileOutputStream("src/ExcelParser.properties")){
+		// try {
+		// properties.store(output, null);
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// System.err.println(e.getMessage());
+		// e.printStackTrace();
+		// }
+		// } catch (IOException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// System.err.println(e1.getMessage());
+		// }
+		//
+		// properties = new Properties();
+		// properties.putAll(gradeGPAs);
+		// try (OutputStream output = new
+		// FileOutputStream("src/ExcelParser.properties")){
+		// try {
+		// properties.store(output, null);
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// System.err.println(e.getMessage());
+		// e.printStackTrace();
+		// }
+		// } catch (IOException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// System.err.println(e1.getMessage());
+		// }
+		// properties = new Properties();
+		// properties.putAll(courseHours);
+		// try (OutputStream output = new
+		// FileOutputStream("src/CourseHours.properties")){
+		// try {
+		// properties.store(output, null);
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// System.err.println(e.getMessage());
+		// e.printStackTrace();
+		// }
+		// } catch (IOException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// System.err.println(e1.getMessage());
+		// }
+
+		if (courseHours == null) {
+			// GeneratorGui.showError("courseHours is null");
+			System.err.println("coursehours is null");
+		}
+		if (gradeGPAs == null) {
+			System.err.println("gradeGPAs is null");
+		}
+		if (typeAGradeGPAs == null) {
+			System.err.println("typeAGradeGPAs is null");
 		}
 		// courseHours = parseStringToInt(CourseHourPath);
 		// gradeGPAs = parseStringToDouble(GradeGPAPath);
@@ -110,6 +215,7 @@ public class ExcelParser {
 					if (courseHours.get(courseName) == null) {
 						GeneratorGui.showError("Couldn't find hours for course: " + courseName);
 						System.err.println("Couldn't find hours for course: " + courseName);
+						break;
 					} else {
 						System.out.println(courseHours.get(courseName));
 						newCourse.setHours(courseHours.get(courseName));
@@ -126,17 +232,19 @@ public class ExcelParser {
 					genericCourses.put(courseName, newCourse);
 				}
 
-				curStudent.addStudentCourse(courseName, coursePercentage, courseGrade);
-				if (curStudent.getName() == null) {
-					curStudent.setName(curName.toString());
-				} else if (!curStudent.getName().equals(curName.toString())) {
-					String errorMessage = String.format(
-							"Error - you have two students ('%s' and '%s') with the same ID (%d)!",
-							curStudent.getName(), curName.toString(), curId);
-					GeneratorGui.showError(errorMessage);
-					return;
+				if (!(courseName == null) && !(courseHours.get(courseName) == null)) {
+					curStudent.addStudentCourse(courseName, coursePercentage, courseGrade);
+					if (curStudent.getName() == null) {
+						curStudent.setName(curName.toString());
+					} else if (!curStudent.getName().equals(curName.toString())) {
+						String errorMessage = String.format(
+								"Error - you have two students ('%s' and '%s') with the same ID (%d)!",
+								curStudent.getName(), curName.toString(), curId);
+						GeneratorGui.showError(errorMessage);
+						return;
+					}
+					students.put(curId, curStudent);
 				}
-				students.put(curId, curStudent);
 			}
 
 			/*
@@ -195,9 +303,25 @@ public class ExcelParser {
 				String letterGrade = courseGrade.getLetterGrade();
 				System.out.println("Letter grade: " + letterGrade);
 				if (genericCourse.isTypeA()) {
-					gpa = typeAGradeGPAs.get(letterGrade);
+					if(typeAGradeGPAs.containsKey(letterGrade))
+					{
+						gpa = typeAGradeGPAs.get(letterGrade);
+					}
+					else
+					{
+						//letter grade can't be looked up, let's not mess up their GPA
+						curHours = 0;
+					}
 				} else {
-					gpa = gradeGPAs.get(letterGrade);
+					if(gradeGPAs.containsKey(letterGrade))
+					{
+						gpa = gradeGPAs.get(letterGrade);
+					}
+					else
+					{
+						//letter grade can't be looked up, let's not mess up their GPA
+						curHours = 0;
+					}
 				}
 				System.out.println("Course gpa: " + gpa);
 				curGpa = (curGpa + (gpa * curHours));
@@ -238,18 +362,28 @@ public class ExcelParser {
 
 		writer.flush();
 		writer.close();
-		GeneratorGui.showComplete("Created File " + ReportCardPath +"!");
+		GeneratorGui.showComplete("Created File " + ReportCardPath + "!");
 	}
 
-	private static Object readHashMap(String fileName) throws IOException, ClassNotFoundException {
-		FileInputStream fileInputStream = new FileInputStream(fileName);
-		ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-
-		Map<?, ?> map = (HashMap<?, ?>) objectInputStream.readObject();
-		objectInputStream.close();
-		return map;
-	}
-
+	/*
+	 * private static HashMap<String, Double> readStringDoubleHashMap(String
+	 * fileName) throws IOException, ClassNotFoundException { FileInputStream
+	 * fileInputStream = new FileInputStream(fileName); ObjectInputStream
+	 * objectInputStream = new ObjectInputStream(fileInputStream);
+	 * 
+	 * HashMap<String, Double> map = new HashMap<String, Double>(); map =
+	 * (HashMap<String, Double>) objectInputStream.readObject();
+	 * objectInputStream.close(); return map; }
+	 * 
+	 * private static HashMap<String, Integer> readStringIntHashMap(String fileName)
+	 * throws IOException, ClassNotFoundException { FileInputStream fileInputStream
+	 * = new FileInputStream(fileName); ObjectInputStream objectInputStream = new
+	 * ObjectInputStream(fileInputStream);
+	 * 
+	 * HashMap<String, Integer> map = new HashMap<String, Integer>(); map =
+	 * (HashMap<String, Integer>) objectInputStream.readObject();
+	 * objectInputStream.close(); return map; }
+	 */
 	public static double round(double value, int places) {
 		if (places < 0)
 			throw new IllegalArgumentException();
@@ -266,9 +400,9 @@ public class ExcelParser {
 	public static void setOutputDir(String absolutePath) {
 		ReportCardPath = absolutePath + "//ReportCard.csv";
 	}
-	
+
 	public static String getOutputDir() {
-		return  ReportCardPath;
+		return ReportCardPath;
 	}
 
 	public static String getReportCardHeader() {
