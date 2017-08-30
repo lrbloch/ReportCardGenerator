@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Date;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,7 +24,7 @@ public class ExcelParser {
 	static HashMap<String, Double> gradeGPAs;
 	static HashMap<String, Double> typeAGradeGPAs;
 	static HashMap<Integer, Student> students = new HashMap<Integer, Student>();
-	static HashMap<String, Course> genericCourses = new HashMap<String, Course>();
+	static HashMap<String, Course> allCourses = new HashMap<String, Course>();
 
 	private static String GradeSpreadsheetPath = "Resources/Grades.csv";
 	private static String ReportCardPath = System.getProperty("user.dir") + "/ReportCard.csv";
@@ -41,46 +43,12 @@ public class ExcelParser {
 
 			// courseHours = (HashMap<String, Integer>)
 			// readStringIntHashMap("Resources/courseHoursMap.txt");
-			// gradeGPAs = (HashMap<String, Double>)
-			// readStringDoubleHashMap("Resources/non-A-gradeGPAs.txt");
-			// typeAGradeGPAs = (HashMap<String, Double>)
-			// readStringDoubleHashMap("Resources/typeAgradeGPAs.txt");
 		} catch (ClassNotFoundException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			System.err.println(e1.getMessage());
 			GeneratorGui.showError(e1.getMessage());
 		}
-
-		gradeGPAs = new HashMap<String, Double>();
-		gradeGPAs.put("A+", 4.33);
-		gradeGPAs.put("A", 4.00);
-		gradeGPAs.put("A-", 3.667);
-		gradeGPAs.put("B+", 3.333);
-		gradeGPAs.put("B", 3.00);
-		gradeGPAs.put("B-", 2.667);
-		gradeGPAs.put("C+", 2.333);
-		gradeGPAs.put("C", 2.00);
-		gradeGPAs.put("C-", 1.667);
-		gradeGPAs.put("D+", 1.333);
-		gradeGPAs.put("D", 1.00);
-		gradeGPAs.put("D-", 0.667);
-		gradeGPAs.put("F", 0.00);
-
-		typeAGradeGPAs = new HashMap<String, Double>();
-		typeAGradeGPAs.put("A+", 5.00);
-		typeAGradeGPAs.put("A", 4.667);
-		typeAGradeGPAs.put("A-", 4.333);
-		typeAGradeGPAs.put("B+", 4.00);
-		typeAGradeGPAs.put("B", 3.667);
-		typeAGradeGPAs.put("B-", 3.333);
-		typeAGradeGPAs.put("C+", 3.00);
-		typeAGradeGPAs.put("C", 2.667);
-		typeAGradeGPAs.put("C-", 2.333);
-		typeAGradeGPAs.put("D+", 2.00);
-		typeAGradeGPAs.put("D", 1.667);
-		typeAGradeGPAs.put("D-", 1.333);
-		typeAGradeGPAs.put("F", 0.00);
 
 		// Properties properties = new Properties();
 		// properties.putAll(typeAGradeGPAs);
@@ -136,15 +104,7 @@ public class ExcelParser {
 			// GeneratorGui.showError("courseHours is null");
 			System.err.println("coursehours is null");
 		}
-		if (gradeGPAs == null) {
-			System.err.println("gradeGPAs is null");
-		}
-		if (typeAGradeGPAs == null) {
-			System.err.println("typeAGradeGPAs is null");
-		}
 		// courseHours = parseStringToInt(CourseHourPath);
-		// gradeGPAs = parseStringToDouble(GradeGPAPath);
-		// typeAGradeGPAs = parseStringToDouble(TypeAGradeGPAPath);
 
 		BufferedReader br = null;
 		String curLine = "";
@@ -178,6 +138,7 @@ public class ExcelParser {
 					// System.out.printf("columnIndex: %d, Cell: %s\n", columnIndex, curCell);
 					switch (columnIndex) {
 					case 8:
+						//Get student id
 						curId = Integer.parseInt(curCell);
 						if (students.get(curId) != null) {
 							curStudent = students.get(curId);
@@ -186,29 +147,36 @@ public class ExcelParser {
 						}
 						curStudent.setId(curId);
 						break;
+
 					case 4:
+						//get course name
 						courseName = curCell;
 						break;
 					case 5:
+						//get instructor's name
 						instructorName = curCell;
 						break;
 					case 6:
+						//get student's name
 						curName.append(curCell);
 						break;
 					case 7:
+						//get student's last name
 						curName.append(" " + curCell);
 						break;
 					case 9:
+						//get student's grade
 						courseGrade = curCell;
 						break;
 					case 10:
+						//get student's percentage
 						coursePercentage = curCell;
 						break;
 					}
 					columnIndex++;
 				}
 
-				if (!genericCourses.containsKey(courseName)) {
+				if (!allCourses.containsKey(courseName)) {
 					Course newCourse = new Course();
 					newCourse.setCourseName(courseName);
 					newCourse.setHours(0);
@@ -229,7 +197,7 @@ public class ExcelParser {
 						newCourse.setTypeA(true);
 					}
 					newCourse.setInstructorName(instructorName);
-					genericCourses.put(courseName, newCourse);
+					allCourses.put(courseName, newCourse);
 				}
 
 				if (!(courseName == null) && !(courseHours.get(courseName) == null)) {
@@ -294,7 +262,7 @@ public class ExcelParser {
 			// for (String key : courses.keySet()) {
 			for (CourseGrade courseGrade : courseGrades) {
 				double gpa = 0;
-				Course genericCourse = genericCourses.get(courseGrade.getCourseName());
+				Course genericCourse = allCourses.get(courseGrade.getCourseName());
 
 				System.out.println("Course name: " + courseGrade.getCourseName());
 
@@ -302,27 +270,11 @@ public class ExcelParser {
 				System.out.println("Course hours: " + curHours);
 				String letterGrade = courseGrade.getLetterGrade();
 				System.out.println("Letter grade: " + letterGrade);
-				if (genericCourse.isTypeA()) {
-					if(typeAGradeGPAs.containsKey(letterGrade))
-					{
-						gpa = typeAGradeGPAs.get(letterGrade);
-					}
-					else
-					{
+				gpa = getCourseGPA(letterGrade, genericCourse.isTypeA());
+				if(gpa == 0) {
 						//letter grade can't be looked up, let's not mess up their GPA
 						curHours = 0;
 					}
-				} else {
-					if(gradeGPAs.containsKey(letterGrade))
-					{
-						gpa = gradeGPAs.get(letterGrade);
-					}
-					else
-					{
-						//letter grade can't be looked up, let's not mess up their GPA
-						curHours = 0;
-					}
-				}
 				System.out.println("Course gpa: " + gpa);
 				curGpa = (curGpa + (gpa * curHours));
 				totalHours += curHours;
@@ -363,6 +315,37 @@ public class ExcelParser {
 		writer.flush();
 		writer.close();
 		GeneratorGui.showComplete("Created File " + ReportCardPath + "!");
+
+	}
+
+	private static double getCourseGPA(String letterGrade, boolean typeA) {
+		double gpa = 0;
+		Boolean plus = letterGrade.contains("+");
+		Boolean minus = letterGrade.contains("-");
+		
+		if(letterGrade.contains("A") || letterGrade.contains("a"))
+		{
+			if(plus) gpa = (typeA) ? 5.00 : 4.333;
+			else if(minus) gpa = (typeA) ? 4.33 : 3.667;
+			else gpa = (typeA) ? 4.667 : 4.00;
+		}
+		else if(letterGrade.contains("B") || letterGrade.contains("b"))
+		{
+			if(plus) gpa = (typeA) ? 4.00 : 3.333;
+			else if(minus) gpa = (typeA) ? 3.33 : 2.667;
+			else gpa = (typeA) ? 3.667 : 3.00;
+		} else if(letterGrade.contains("C") || letterGrade.contains("c"))
+		{
+			if (plus) gpa = (typeA) ? 3.00 : 2.333;
+			else if (minus) gpa = (typeA) ? 2.33 : 1.667;
+			else gpa = (typeA) ? 2.667 : 2.00;
+		}else if(letterGrade.contains("D") || letterGrade.contains("d"))
+		{
+			if(plus) gpa = (typeA) ? 2.00 : 1.333;
+			else if (minus) gpa = (typeA) ? 1.33 : 0.667;
+			else gpa = (typeA) ? 1.667 : 1.00;
+		}
+		return gpa;
 	}
 
 	/*
