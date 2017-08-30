@@ -257,9 +257,9 @@ public class ExcelParser {
 				System.err.println("Couldn't find student ID" + studentId);
 			}
 			Student s = students.get(studentId);
-			//System.out.println("----------------");
-			//System.out.printf("StudentId: %d \t Student Name: %s\n", s.getId(), s.getName());
-			//System.out.println("Courses:");
+			System.out.println("----------------");
+			System.out.printf("StudentId: %d \t Student Name: %s\n", s.getId(), s.getName());
+			System.out.println("Courses:");
 			ArrayList<CourseGrade> courseGrades = s.getCourseGrades();
 
 			Double curGpa = 0.00;
@@ -271,10 +271,10 @@ public class ExcelParser {
 				double gpa = 0;
 				Course genericCourse = allCourses.get(courseGrade.getCourseName());
 
-				//System.out.println("Course name: " + courseGrade.getCourseName());
+				System.out.println("Course name: " + courseGrade.getCourseName());
 
 				int curHours = courseHours.get(courseGrade.getCourseName());
-				//System.out.println("Course hours: " + curHours);
+				System.out.println("Course hours: " + curHours);
 				String letterGrade = courseGrade.getLetterGrade();
 				//System.out.println("Letter grade: " + letterGrade);
 				gpa = getCourseGPA(letterGrade, genericCourse.isTypeA());
@@ -285,7 +285,7 @@ public class ExcelParser {
 				//System.out.println("Course gpa: " + gpa);
 				curGpa = (curGpa + (gpa * curHours));
 				totalHours += curHours;
-				//System.out.println("Total Hours: " + totalHours);
+				System.out.println("Total Hours: " + totalHours);
 
 				buff.append(courseGrade.getCourseName());
 				buff.append("," + genericCourse.getInstructorName());
