@@ -278,10 +278,11 @@ public class ExcelParser {
 				String letterGrade = courseGrade.getLetterGrade();
 				//System.out.println("Letter grade: " + letterGrade);
 				gpa = getCourseGPA(letterGrade, genericCourse.isTypeA());
-				if(gpa == 0) {
-						//letter grade can't be looked up, let's not mess up their GPA
-						curHours = 0;
-					}
+				if(gpa == 666) {
+					//letter grade can't be looked up, let's not mess up their GPA
+					curHours = 0;
+					gpa = 0;
+				}
 				//System.out.println("Course gpa: " + gpa);
 				curGpa = (curGpa + (gpa * curHours));
 				totalHours += curHours;
@@ -326,7 +327,8 @@ public class ExcelParser {
 	}
 
 	private static double getCourseGPA(String letterGrade, boolean typeA) {
-		double gpa = 0;
+		
+		double gpa = 666;
 		Boolean plus = letterGrade.contains("+");
 		Boolean minus = letterGrade.contains("-");
 		
@@ -351,6 +353,9 @@ public class ExcelParser {
 			if(plus) gpa = (typeA) ? 2.00 : 1.333;
 			else if (minus) gpa = (typeA) ? 1.33 : 0.667;
 			else gpa = (typeA) ? 1.667 : 1.00;
+		}else if(letterGrade.contains("F") || letterGrade.contains("f"))
+		{
+			gpa = 0.00;
 		}
 		return gpa;
 	}
