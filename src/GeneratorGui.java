@@ -76,7 +76,7 @@ public class GeneratorGui {
 		}
 		
 		System.setErr(errStream);
-		System.setOut(logStream);
+		//System.setOut(logStream);
 		
 		JButton engradeUploadBtn = new JButton("Upload New");
 		engradeUploadBtn.addActionListener(new ActionListener() {

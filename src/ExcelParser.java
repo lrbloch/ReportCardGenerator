@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,6 +41,11 @@ public class ExcelParser {
 			courseHours = new HashMap<String, Integer>();
 			courseHours = (HashMap<String, Integer>) objectInputStream.readObject();
 			objectInputStream.close();
+			
+//			FileOutputStream fileOutputStream = new FileOutputStream("Resources/courseHoursMap.txt"); 
+//			ObjectOutputStream objectOutputStream= new ObjectOutputStream(fileOutputStream);
+//			objectOutputStream.writeObject(courseHours); 
+//			objectOutputStream.close();
 
 			// courseHours = (HashMap<String, Integer>)
 			// readStringIntHashMap("Resources/courseHoursMap.txt");
@@ -215,11 +221,12 @@ public class ExcelParser {
 				}
 			}
 
-			/*
-			 * for(Course c : courses.values()) { System.out.println(c.getCourseName());
-			 * System.out.println(c.getHours()); System.out.println(c.getInstructorName());
-			 * System.out.println("Type A?: " + c.isTypeA()); }
-			 */
+			for(Course c : allCourses.values()) { 
+				System.out.println(c.getCourseName());
+				System.out.println(c.getHours()); 
+				System.out.println(c.getInstructorName());
+				System.out.println("Type A?: " + c.isTypeA()); 
+			}
 
 			calculateGpas();
 
@@ -250,9 +257,9 @@ public class ExcelParser {
 				System.err.println("Couldn't find student ID" + studentId);
 			}
 			Student s = students.get(studentId);
-			System.out.println("----------------");
-			System.out.printf("StudentId: %d \t Student Name: %s\n", s.getId(), s.getName());
-			System.out.println("Courses:");
+			//System.out.println("----------------");
+			//System.out.printf("StudentId: %d \t Student Name: %s\n", s.getId(), s.getName());
+			//System.out.println("Courses:");
 			ArrayList<CourseGrade> courseGrades = s.getCourseGrades();
 
 			Double curGpa = 0.00;
@@ -264,21 +271,21 @@ public class ExcelParser {
 				double gpa = 0;
 				Course genericCourse = allCourses.get(courseGrade.getCourseName());
 
-				System.out.println("Course name: " + courseGrade.getCourseName());
+				//System.out.println("Course name: " + courseGrade.getCourseName());
 
 				int curHours = courseHours.get(courseGrade.getCourseName());
-				System.out.println("Course hours: " + curHours);
+				//System.out.println("Course hours: " + curHours);
 				String letterGrade = courseGrade.getLetterGrade();
-				System.out.println("Letter grade: " + letterGrade);
+				//System.out.println("Letter grade: " + letterGrade);
 				gpa = getCourseGPA(letterGrade, genericCourse.isTypeA());
 				if(gpa == 0) {
 						//letter grade can't be looked up, let's not mess up their GPA
 						curHours = 0;
 					}
-				System.out.println("Course gpa: " + gpa);
+				//System.out.println("Course gpa: " + gpa);
 				curGpa = (curGpa + (gpa * curHours));
 				totalHours += curHours;
-				System.out.println("Total Hours: " + totalHours);
+				//System.out.println("Total Hours: " + totalHours);
 
 				buff.append(courseGrade.getCourseName());
 				buff.append("," + genericCourse.getInstructorName());
@@ -295,7 +302,7 @@ public class ExcelParser {
 			// curGpa = round(curGpa, 2);
 			s.setgpa(curGpa);
 
-			System.out.println("Overall GPA: " + String.format("%.2f", s.getgpa()));
+			//System.out.println("Overall GPA: " + String.format("%.2f", s.getgpa()));
 			writer.write(ReportCardHeader);
 
 			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
@@ -348,25 +355,6 @@ public class ExcelParser {
 		return gpa;
 	}
 
-	/*
-	 * private static HashMap<String, Double> readStringDoubleHashMap(String
-	 * fileName) throws IOException, ClassNotFoundException { FileInputStream
-	 * fileInputStream = new FileInputStream(fileName); ObjectInputStream
-	 * objectInputStream = new ObjectInputStream(fileInputStream);
-	 * 
-	 * HashMap<String, Double> map = new HashMap<String, Double>(); map =
-	 * (HashMap<String, Double>) objectInputStream.readObject();
-	 * objectInputStream.close(); return map; }
-	 * 
-	 * private static HashMap<String, Integer> readStringIntHashMap(String fileName)
-	 * throws IOException, ClassNotFoundException { FileInputStream fileInputStream
-	 * = new FileInputStream(fileName); ObjectInputStream objectInputStream = new
-	 * ObjectInputStream(fileInputStream);
-	 * 
-	 * HashMap<String, Integer> map = new HashMap<String, Integer>(); map =
-	 * (HashMap<String, Integer>) objectInputStream.readObject();
-	 * objectInputStream.close(); return map; }
-	 */
 	public static double round(double value, int places) {
 		if (places < 0)
 			throw new IllegalArgumentException();
