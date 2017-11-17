@@ -1,11 +1,8 @@
-package com.example.bank;
+package com.abaarso.test;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import com.abaarso.grades.GeneratorGui;
-
 import junit.framework.Assert;
 
 /**

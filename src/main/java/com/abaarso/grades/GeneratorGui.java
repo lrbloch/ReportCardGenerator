@@ -40,7 +40,7 @@ public class GeneratorGui {
 			public void run() {
 				try {
 					GeneratorGui window = new GeneratorGui();
-					window.frame.setVisible(true);
+					GeneratorGui.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
