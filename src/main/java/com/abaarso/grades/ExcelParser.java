@@ -1,3 +1,4 @@
+package com.abaarso.grades;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class ExcelParser {
 
 			// courseHours = (HashMap<String, Integer>)
 			// readStringIntHashMap("Resources/courseHoursMap.txt");
-		} catch (ClassNotFoundException | IOException e1) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			System.err.println(e1.getMessage());

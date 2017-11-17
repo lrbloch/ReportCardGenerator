@@ -1,3 +1,4 @@
+package com.abaarso.grades;
 
 public class CourseGrade {
 	

@@ -1,3 +1,4 @@
+package com.abaarso.grades;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
