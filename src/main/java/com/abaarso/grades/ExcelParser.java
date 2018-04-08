@@ -1,17 +1,17 @@
 package com.abaarso.grades;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Date;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.util.HashMap;
 
 public class ExcelParser {
 
@@ -25,6 +25,8 @@ public class ExcelParser {
 	private static String ReportCardPath = System.getProperty("user.dir") + "/ReportCard.csv";
 	private static String ReportCardHeader = "2017-2018 Term 1 Midterm Grade Report\n";
 
+	private static final int GRADE_NOT_FOUND = 666;
+	
 	@SuppressWarnings("unchecked")
 	public static void parse() throws FileNotFoundException {
 
@@ -272,7 +274,7 @@ public class ExcelParser {
 				String letterGrade = courseGrade.getLetterGrade();
 				//System.out.println("Letter grade: " + letterGrade);
 				gpa = getCourseGPA(letterGrade, genericCourse.isTypeA());
-				if(gpa == 666) {
+				if(gpa == GRADE_NOT_FOUND) {
 					//letter grade can't be looked up, let's not mess up their GPA
 					curHours = 0;
 					gpa = 0;
@@ -287,7 +289,7 @@ public class ExcelParser {
 				buff.append("," + letterGrade);
 				buff.append("," + courseGrade.getPercentage());
 				buff.append("," + curHours);
-				buff.append("," + String.format("%.2f", gpa));// Double.toString(gpa));
+				buff.append("," + String.format("%.2f", gpa));
 				buff.append("\n");
 
 			}
@@ -322,7 +324,7 @@ public class ExcelParser {
 
 	private static double getCourseGPA(String letterGrade, boolean typeA) {
 		
-		double gpa = 666;
+		double gpa = GRADE_NOT_FOUND;
 		Boolean plus = letterGrade.contains("+");
 		Boolean minus = letterGrade.contains("-");
 		

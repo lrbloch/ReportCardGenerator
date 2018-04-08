@@ -1,26 +1,23 @@
 package com.abaarso.grades;
+import java.awt.Color;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-
+import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.awt.event.ActionEvent;
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import java.awt.Font;
-import java.awt.Color;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class GeneratorGui {
 
@@ -39,7 +36,6 @@ public class GeneratorGui {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GeneratorGui window = new GeneratorGui();
 					GeneratorGui.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
