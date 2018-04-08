@@ -27,6 +27,37 @@ public class ExcelParser {
 
 	private static final int GRADE_NOT_FOUND = 666;
 	
+	//Type A grades
+	private static final double TYPEA_A_PLUS = 5.00;
+	private static final double TYPEA_A = 4.667;
+	private static final double TYPEA_A_MINUS = 4.33;
+	private static final double TYPEA_B_PLUS = 4.00;
+	private static final double TYPEA_B = 3.667;
+	private static final double TYPEA_B_MINUS = 3.33;
+	private static final double TYPEA_C_PLUS = 3.00;
+	private static final double TYPEA_C = 2.667;
+	private static final double TYPEA_C_MINUS = 2.33;
+	private static final double TYPEA_D_PLUS = 2.00;
+	private static final double TYPEA_D = 1.667;
+	private static final double TYPEA_D_MINUS = 1.33;
+	private static final double TYPEA_F = 0.00;
+	
+	//Type B grades
+	private static final double TYPEB_A_PLUS = 4.333;
+	private static final double TYPEB_A = 4.00;
+	private static final double TYPEB_A_MINUS = 3.667;
+	private static final double TYPEB_B_PLUS = 3.333;
+	private static final double TYPEB_B = 3.00;
+	private static final double TYPEB_B_MINUS = 2.667;
+	private static final double TYPEB_C_PLUS = 2.333;
+	private static final double TYPEB_C = 2.00;
+	private static final double TYPEB_C_MINUS = 1.667;
+	private static final double TYPEB_D_PLUS = 1.333;
+	private static final double TYPEB_D = 1.00;
+	private static final double TYPEB_D_MINUS = 0.667;
+	private static final double TYPEB_F = 0.00;
+	
+	
 	@SuppressWarnings("unchecked")
 	public static void parse() throws FileNotFoundException {
 
@@ -330,28 +361,28 @@ public class ExcelParser {
 		
 		if(letterGrade.contains("A") || letterGrade.contains("a"))
 		{
-			if(plus) gpa = (typeA) ? 5.00 : 4.333;
-			else if(minus) gpa = (typeA) ? 4.33 : 3.667;
-			else gpa = (typeA) ? 4.667 : 4.00;
+			if(plus) gpa = (typeA) ? TYPEA_A_PLUS : TYPEB_A_PLUS;
+			else if(minus) gpa = (typeA) ? TYPEA_A_MINUS : TYPEB_A_MINUS;
+			else gpa = (typeA) ? TYPEA_A : TYPEB_A;
 		}
 		else if(letterGrade.contains("B") || letterGrade.contains("b"))
 		{
-			if(plus) gpa = (typeA) ? 4.00 : 3.333;
-			else if(minus) gpa = (typeA) ? 3.33 : 2.667;
-			else gpa = (typeA) ? 3.667 : 3.00;
+			if(plus) gpa = (typeA) ? TYPEA_B_PLUS : TYPEB_B_PLUS;
+			else if(minus) gpa = (typeA) ? TYPEA_B_MINUS : TYPEB_B_MINUS;
+			else gpa = (typeA) ? TYPEA_B : TYPEB_B;
 		} else if(letterGrade.contains("C") || letterGrade.contains("c"))
 		{
-			if (plus) gpa = (typeA) ? 3.00 : 2.333;
-			else if (minus) gpa = (typeA) ? 2.33 : 1.667;
-			else gpa = (typeA) ? 2.667 : 2.00;
+			if (plus) gpa = (typeA) ? TYPEA_C_PLUS : TYPEB_C_PLUS;
+			else if (minus) gpa = (typeA) ? TYPEA_C_MINUS : TYPEB_C_MINUS;
+			else gpa = (typeA) ? TYPEA_C : TYPEB_C;
 		}else if(letterGrade.contains("D") || letterGrade.contains("d"))
 		{
-			if(plus) gpa = (typeA) ? 2.00 : 1.333;
-			else if (minus) gpa = (typeA) ? 1.33 : 0.667;
-			else gpa = (typeA) ? 1.667 : 1.00;
+			if(plus) gpa = (typeA) ? TYPEA_D_PLUS : TYPEB_D_PLUS;
+			else if (minus) gpa = (typeA) ? TYPEA_D_MINUS : TYPEB_D_MINUS;
+			else gpa = (typeA) ? TYPEA_D : TYPEB_D;
 		}else if(letterGrade.contains("F") || letterGrade.contains("f"))
 		{
-			gpa = 0.00;
+			gpa = (typeA) ? TYPEA_F : TYPEB_F;
 		}
 		return gpa;
 	}
